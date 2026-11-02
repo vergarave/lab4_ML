@@ -1,6 +1,6 @@
 # Guion para DermAlpes — máximo 3 minutos
 
-**Estado:** contenido preparado con resultados ejecutados. Falta grabar, revisar duración y entregar el video. Aproximadamente 320 palabras; ensayar a ritmo natural y mantener el video bajo tres minutos. No leer títulos ni nombres de archivos.
+**Uso:** guion de apoyo basado en resultados ejecutados. El entregable audiovisual es la grabación de máximo tres minutos. Aproximadamente 320 palabras; ensayar a ritmo natural y mantener el video bajo tres minutos. No leer títulos ni nombres de archivos.
 
 ## 0:00–0:25 · El problema
 

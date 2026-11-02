@@ -1,20 +1,40 @@
 {
   "celdas_codigo_ejecutadas": 14,
+  "orden_ejecucion": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
   "errores": 0,
   "figuras_notebook": 32,
   "imagenes_HTML": 32,
+  "codigo_resultados_y_png_conservados": true,
+  "huella_contenido": "7206f5d8d18c3748c5ac2315bde42c8348528bf83177b4cc25fabbf5fbea5ca8",
   "modelos_ajuste_barrido": 1050,
   "modelos_IAG_adicionales": 15,
-  "modelos_ajuste_total": 1065,
-  "evaluaciones_mascara_barrido": 300,
-  "configuraciones_barrido": 20,
-  "configuraciones_comparacion_IAG": 21,
-  "imagenes_prueba": 5,
+  "configuraciones_comparadas": 21,
   "configuracion_final": "C05/central",
   "Dice_ajuste": 0.861519951476382,
   "Dice_prueba": 0.8940929779199609,
   "Dice_IAG_ajuste": 0.8060850124803547,
-  "consulta_IAG": "respuesta real implementada y evaluada; falta prompt e historial originales",
-  "ejecucion": "original conservada; correccion IAG ejecutada en kernel auxiliar, solo ajuste",
-  "video": "guion preparado; grabacion pendiente"
+  "entregables_localizados": [
+    "Lab4_Segmentacion_Imagenes.ipynb",
+    "Lab4_Segmentacion_Imagenes.html",
+    "consulta_IAG.md"
+  ],
+  "videos_en_repositorio": [],
+  "evidencia_consulta_disponible": "respuesta completa y resumen de la consulta en la declaración; sin exportación original de seguimientos en el repositorio",
+  "aportes_equipo": "documentados en la declaración de IA actual",
+  "fuente_requisitos": "secciones Entregables y Actividad de verificación del enunciado; rúbrica, criterios de video e IAG"
 }

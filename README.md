@@ -1,25 +1,36 @@
-# Laboratorio 4: segmentación para DermAlpes
+# Laboratorio 4 — Segmentación de lesiones para DermAlpes
 
-ISIS-2611, Universidad de los Andes. K-Means sobre RGB y posición con evaluación separada: 15 imágenes de ajuste y 5 de prueba. Referencias principales: prácticas oficiales P11, P12 y P13 de 202620.
+ISIS-2611, Universidad de los Andes. Integrantes: Julian Pinto y Daniel Vergara.
 
-## Archivos
+Se representan los píxeles mediante RGB y posición normalizados, se agrupan con K-Means y se construye una máscara automática. La partición oficial contiene 15 imágenes de ajuste y 5 de prueba. Las prácticas P11, P12 y P13 son las referencias metodológicas.
 
-- `Lab4_Segmentacion_Imagenes.ipynb`: implementación, ejecuciones, figuras y análisis.
-- `Lab4_Segmentacion_Imagenes.html`: lectura del notebook sin Python.
-- `resultados/`: CSV de los experimentos, configuración congelada y figuras.
-- `consulta_IAG.md`: respuesta real de IA aportada por el integrante y preservada íntegramente; su recomendación se implementa y evalúa en el notebook.
-- `Control_Calidad.md`: revisión criterio por criterio y pendientes.
-- `Guion_Video.md`: guion; **no sustituye el video grabado**.
-- `requirements.txt`: versiones usadas para reproducir.
-- `solicitud_usuario.txt`: solicitud real de revisión, para transparencia de IA.
+## Resultados
 
-## Datos
+La configuración elegida es β=1, λ=0.75 y criterio central, con K por máximo de silueta entre 2 y 8. Dice medio: **0.8615 en ajuste** y **0.8941 en prueba**. La recomendación de IA, evaluada con β=1, λ=0.35 y K=3 fijo, obtiene **0.8061** en ajuste. El notebook contiene las tablas, 32 figuras, las cinco respuestas de análisis, la declaración de IA y ambos bonos.
 
-Fuente: [ISIC 2016, segmentación de lesiones](https://challenge.isic-archive.com/landing/2016/37/), selección proporcionada por el curso. Colocar exactamente los 20 JPG en `data/images/` y las 20 máscaras en `data/masks/`, con nombres `ISIC_0000085.jpg` e `ISIC_0000085_Segmentation.png`, etc. La lista completa y la partición fija están en el notebook y el enunciado. Los 20 JPG y las 20 máscaras se conservan en `data/` y se incluyen en el repositorio para compartirlos con el compañero. `.gitignore` permite `data/images/` y `data/masks/`; los 40 archivos ya están rastreados por Git. El compañero los recibirá al hacer `git pull` después de que los cambios estén confirmados y publicados en la rama compartida.
+## Entrega exigida por la guía
 
-## Ejecución en Windows (PowerShell, desde esta carpeta)
+Para el ZIP de entrega:
 
-Se verificó Python 3.12.10. No se necesita GPU. Para instalar dependencias en un entorno aislado:
+1. `Lab4_Segmentacion_Imagenes.ipynb`, con ejecuciones y nombres de ambos integrantes.
+2. `Lab4_Segmentacion_Imagenes.html`, con los mismos resultados y figuras visibles.
+3. `consulta_IAG.md`, que conserva la respuesta evaluada.
+4. El historial original de esa consulta, con prompt, respuesta y mensajes posteriores. Puede estar incorporado al documento de consulta o adjuntarse como exportación/capturas legibles. Actualmente el notebook contiene un resumen del prompt y `consulta_IAG.md` contiene la respuesta, pero el historial original no está en el repositorio.
+5. El video explicativo de máximo tres minutos, dirigido a DermAlpes. No se encontró un archivo de video en este repositorio; si está guardado en otro lugar, se adjunta desde allí. Si Bloque Neón lo recibe en un campo independiente, se entrega en ese campo.
+
+La guía no establece un nombre obligatorio para el ZIP. No exige entregar el repositorio entero. También debe estar registrado el grupo de ambos integrantes en Bloque Neón.
+
+**Archivos internos que se excluyen del ZIP mínimo:** `solicitud_usuario.txt`, `Guion_Video.md`, `Control_Calidad.md`, este README, `requirements.txt`, `.gitignore`, `gitignore.txt`, `.git/`, `tmp/`, `resultados/`, `.DS_Store`, la guía y la rúbrica.
+
+Los datos y `requirements.txt` son recursos para reproducir el cálculo, no entregables explícitos de la guía. **Para abrir los resultados ya ejecutados no se necesita `data/` ni `resultados/`. Para ejecutar desde cero sí se necesita `data/`** con las veinte imágenes y sus máscaras. Si el docente pide un paquete autosuficiente para ejecución, se incorporan `data/` y `requirements.txt`; esa exigencia adicional no aparece en el enunciado local.
+
+## Datos y reproducción local
+
+Fuente: [ISIC 2016, segmentación de lesiones](https://challenge.isic-archive.com/landing/2016/37/), selección suministrada por el curso. Los JPG están en `data/images/` y las máscaras en `data/masks/`, con nombres como `ISIC_0000085.jpg` e `ISIC_0000085_Segmentation.png`. La partición y los identificadores completos están en el notebook. Los cuarenta archivos están rastreados por Git para compartirlos con el compañero.
+
+El lado mayor de cada imagen se reduce a 160 píxeles manteniendo proporciones. K-Means usa todos los píxeles de trabajo; silueta usa 1000 sin reemplazo, semilla 42. El barrido obligatorio contiene 1050 modelos y la recomendación de IA añade quince. No se necesita GPU.
+
+Desde esta carpeta, en PowerShell con Python 3.12:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -29,12 +40,4 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m nbconvert --to html --template classic Lab4_Segmentacion_Imagenes.ipynb
 ```
 
-También se puede abrir el notebook en VS Code, seleccionar ese entorno y ejecutar todas las celdas en orden desde un kernel limpio. La ejecución recalcula los experimentos y sobrescribe los resultados derivados. Los resultados de prueba ya están visibles: repetir sirve para reproducir **el mismo método**, no para ajustar parámetros a prueba. Si se quiere conservar esta ejecución, copiar primero el notebook y `resultados/`.
-
-El lado mayor se reduce a 160 píxeles conservando proporciones; K-Means usa todos los píxeles de trabajo, silueta usa 1000 (semilla 42). El barrido obligatorio explora 1050 modelos en ajuste; la consulta real añade 15 modelos con K=3 fijo. El barrido original tardó aproximadamente 219 segundos; los tiempos dependen del equipo y se limita el paralelismo a un hilo. Las métricas no equivalen a una evaluación en resolución original.
-
-La recomendación real usa β=1, λ=0.35, K=3 y una regla con luminancia, centralidad y marco del 10 %. Obtiene Dice medio de ajuste **0.8061**, frente a **0.8615** de C05/central. La tabla ampliada compara 21 configuraciones. La integración de esta consulta se ejecutó como una corrección sobre las 15 imágenes de ajuste; conserva las ejecuciones originales del resto del notebook, incluida prueba. Por ello algunos contadores de celdas pueden repetirse. No se afirma que esta corrección hubiera estado incluida en la ejecución inicial.
-
-## Antes de entregar
-
-Revisar `Control_Calidad.md`, validar nombres y aportes de los integrantes y grabar un video de máximo tres minutos usando el guion. La respuesta real de IA y su evaluación ya están incorporadas; falta adjuntar el prompt y el historial originales para documentar las condiciones de la consulta y su secuencia. No sustituirlos por ejemplos reconstruidos ni inventar fechas. Entregar el `.ipynb`, el `.html` y el video según Bloque Neón; comprobar el registro de ambos integrantes. Los bonos están sujetos a completar las actividades obligatorias.
+También puede ejecutarse en VS Code seleccionando el entorno y ejecutando todas las celdas en orden. El notebook genera `resultados/` automáticamente y sobrescribe los archivos derivados. Reproducir el método fijo no autoriza reajustarlo usando las máscaras de prueba.

@@ -6,3 +6,6 @@ __pycache__/
 .pytest_cache/
 tmp/
 # Los CSV y las figuras derivados sí se conservan como evidencia.
+
+# Archivos de metadatos de macOS
+.DS_Store
