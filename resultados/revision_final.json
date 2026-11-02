@@ -1,0 +1,12 @@
+{
+  "codigo_y_salidas_antes": "6299ecc0a4c44dfdc45ffc35fb7099081251947ccfe08c0344320417d43daed6",
+  "codigo_y_salidas_despues": "6299ecc0a4c44dfdc45ffc35fb7099081251947ccfe08c0344320417d43daed6",
+  "declaracion_en_ultima_celda": true,
+  "prompts": "ejemplos reconstruidos, no historial real",
+  "consulta_IAG": "Respuesta real restaurada y evaluada: beta=1, lambda=0.35, K=3; falta historial del prompt.",
+  "datos": "se permite versionar y compartir data/",
+  "contenido_codigo_y_resultados_sin_metadatos_antes": "dcce586ec9ed0740ad983284b9fcb47d5fa06e1f9fd8256be4c36b5512baaf43",
+  "contenido_codigo_y_resultados_sin_metadatos_despues": "dcce586ec9ed0740ad983284b9fcb47d5fa06e1f9fd8256be4c36b5512baaf43",
+  "accesibilidad": "Restaurados metadatos de texto alternativo en las 30 figuras; PNG intactos.",
+  "nota_actualizacion": "La revisión de integridad anterior precede a la integración real de IAG; consultar restauracion_consulta_IAG.json."
+}

@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+tmp/
+# Los CSV y las figuras derivados sí se conservan como evidencia.

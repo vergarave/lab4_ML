@@ -1,0 +1,20 @@
+{
+  "celdas_codigo_ejecutadas": 14,
+  "errores": 0,
+  "figuras_notebook": 32,
+  "imagenes_HTML": 32,
+  "modelos_ajuste_barrido": 1050,
+  "modelos_IAG_adicionales": 15,
+  "modelos_ajuste_total": 1065,
+  "evaluaciones_mascara_barrido": 300,
+  "configuraciones_barrido": 20,
+  "configuraciones_comparacion_IAG": 21,
+  "imagenes_prueba": 5,
+  "configuracion_final": "C05/central",
+  "Dice_ajuste": 0.861519951476382,
+  "Dice_prueba": 0.8940929779199609,
+  "Dice_IAG_ajuste": 0.8060850124803547,
+  "consulta_IAG": "respuesta real implementada y evaluada; falta prompt e historial originales",
+  "ejecucion": "original conservada; correccion IAG ejecutada en kernel auxiliar, solo ajuste",
+  "video": "guion preparado; grabacion pendiente"
+}

@@ -1,0 +1,938 @@
+# TAREA: DESARROLLAR Y COMPLETAR EL LABORATORIO 4 DE APRENDIZAJE DE MÁQUINA
+
+Necesito que desarrolles, corrijas, ejecutes y documentes completamente mi Laboratorio 4 de Aprendizaje de Máquina (ISIS-2611, Universidad de los Andes).
+
+El laboratorio consiste en implementar un método de segmentación de lesiones dermatológicas utilizando aprendizaje no supervisado, específicamente K-Means.
+
+**IMPORTANTE: NO QUIERO QUE IMPLEMENTES UNA SOLUCIÓN GENÉRICA. NECESITO QUE TE BASES CASI EN SU TOTALIDAD EN LAS PRÁCTICAS OFICIALES DE MI CURSO.**
+
+Debes trabajar directamente sobre el proyecto local y modificar los archivos necesarios.
+
+## 1. ARCHIVOS Y REFERENCIAS OBLIGATORIAS
+
+### 1.1. Notebook existente
+
+El archivo principal es:
+
+`Lab4_Segmentacion_Imagenes.ipynb`
+
+Este notebook fue generado inicialmente por Gemini utilizando como referencia las prácticas de clase.
+
+Debes:
+
+* Leerlo y comprender su estructura completa.
+* Revisar todas las celdas de código y Markdown.
+* Identificar errores, inconsistencias, implementaciones incompletas y decisiones metodológicas incorrectas.
+* Reutilizar las partes que estén bien implementadas.
+* Corregir o reemplazar las implementaciones deficientes.
+* Completar todas las actividades obligatorias.
+* Ejecutar el notebook con los datos reales.
+* Verificar que los resultados sean correctos y reproducibles.
+
+**TIENES LIBERTAD PARA MODIFICAR LA ESTRUCTURA DEL NOTEBOOK.**
+
+Puedes reorganizar secciones, agregar o eliminar celdas, modificar funciones, reemplazar implementaciones e introducir componentes cuando sea necesario.
+
+Sin embargo, todos los cambios deben respetar el enunciado, la rúbrica y el enfoque metodológico utilizado en las prácticas del curso.
+
+No mantengas código incorrecto simplemente porque ya existe en la plantilla.
+
+### 1.2. Enunciado oficial
+
+Archivo:
+
+`Laboratorio 4_Segmentación de imágenes.md`
+
+Es obligatorio leer el archivo completo antes de comenzar.
+
+Este documento es la referencia principal sobre las actividades, requisitos técnicos, protocolo experimental, preguntas de análisis y entregables.
+
+No debes omitir ninguna actividad obligatoria.
+
+### 1.3. Rúbrica oficial
+
+Archivo:
+
+`rubrica.pdf`
+
+Contiene la rúbrica detallada de evaluación del laboratorio.
+
+Debes revisar sus 14 páginas, especialmente los requisitos del **Nivel 4**, correspondiente al máximo desempeño.
+
+El PDF contiene tablas que pueden requerir inspección visual.
+
+No te limites a los títulos o porcentajes. Comprueba específicamente qué condiciones deben cumplirse para obtener el Nivel 4 de cada criterio.
+
+Utiliza esta rúbrica como lista de verificación durante el desarrollo y antes de finalizar.
+
+### 1.4. PRÁCTICAS OFICIALES DEL CURSO — REFERENCIA PRIORITARIA
+
+Las prácticas se encuentran en:
+
+`C:\Users\daniv\OneDrive - Universidad de los Andes\7mo semestre\ML\MaterialDeClase-ISIS-2611\202620\practicas`
+
+**ESTA CARPETA ES LA REFERENCIA TÉCNICA Y METODOLÓGICA MÁS IMPORTANTE.**
+
+Antes de implementar cualquier modificación sustancial:
+
+1. Inspecciona el contenido de la carpeta.
+2. Identifica las prácticas relacionadas con clustering, K-Means, evaluación de agrupaciones, procesamiento de imágenes y segmentación.
+3. Abre y estudia los notebooks correspondientes.
+4. Identifica cómo el profesor implementa los algoritmos, funciones, visualizaciones y métricas.
+5. Reutiliza los enfoques, estructuras, librerías y patrones de programación de esas prácticas.
+
+La plantilla existente menciona particularmente:
+
+* P11: K-Means.
+* P12: DBSCAN y agrupación aglomerativa.
+* P13: Segmentación de imágenes con K-Means.
+
+Comprueba los nombres reales de los archivos antes de utilizarlos.
+
+También puedes consultar otras prácticas del directorio que sean relevantes para pipelines, preparación de datos, visualización o evaluación.
+
+**Si las prácticas contienen una implementación que permite resolver una actividad del laboratorio, prioriza adaptarla antes de inventar otra solución.**
+
+No quiero implementaciones excesivamente sofisticadas ni librerías innecesarias cuando el profesor ya ha enseñado una forma de realizar la misma operación.
+
+Mantén un estilo de programación universitario, claro, explicable y consistente con las prácticas.
+
+Puedes utilizar funciones auxiliares y clases personalizadas cuando se necesiten, pero evita la sobreingeniería.
+
+No modifiques los archivos originales de las prácticas.
+
+Cuando sea pertinente, documenta brevemente en el notebook qué práctica sirvió de referencia para una función o procedimiento.
+
+Si alguna práctica no está disponible, informa cuál no pudiste consultar. No afirmes haberla utilizado sin revisarla.
+
+---
+
+# 2. CONJUNTO DE DATOS Y ESTRUCTURA DEL PROYECTO
+
+Los datos están organizados de la siguiente manera:
+
+```text
+data/
+├── images/
+│   └── 20 imágenes .jpg
+└── masks/
+    └── 20 máscaras _Segmentation.png
+```
+
+Las imágenes pertenecen al conjunto ISIC 2016.
+
+Son exactamente 20 imágenes:
+
+**15 imágenes de ajuste:**
+
+ISIC_0000085
+ISIC_0000114
+ISIC_0000150
+ISIC_0000086
+ISIC_0000116
+ISIC_0000153
+ISIC_0000089
+ISIC_0000122
+ISIC_0000156
+ISIC_0000094
+ISIC_0000133
+ISIC_0000157
+ISIC_0000108
+ISIC_0000137
+ISIC_0000112
+
+**5 imágenes de prueba:**
+
+ISIC_0000087
+ISIC_0000105
+ISIC_0000110
+ISIC_0000123
+ISIC_0000128
+
+No cambies esta partición.
+
+La carga de archivos debe utilizar rutas relativas al proyecto para que el notebook sea portable.
+
+Antes de ejecutar los experimentos, implementa verificaciones para comprobar:
+
+* Que existen exactamente las 20 imágenes necesarias.
+* Que cada imagen tiene su máscara correspondiente.
+* Que las dimensiones coinciden.
+* Que las imágenes se cargan correctamente en RGB.
+* Que las máscaras se convierten a valores binarios 0 y 1.
+* Que las máscaras conservan sus valores binarios después del redimensionamiento.
+
+Si necesitas reducir la resolución de las imágenes para mejorar el rendimiento, puedes hacerlo, pero debes justificar la resolución escogida.
+
+Para redimensionar máscaras, utiliza obligatoriamente interpolación por vecino más cercano.
+
+No modifiques los archivos originales dentro de `data`.
+
+## 2.1. PROTOCOLO EXPERIMENTAL ESTRICTO
+
+La separación entre ajuste y prueba es fundamental para el laboratorio.
+
+Las 15 imágenes de ajuste se utilizan para:
+
+* Explorar configuraciones.
+* Seleccionar los pesos β y λ.
+* Diseñar y comparar criterios de construcción de máscaras.
+* Evaluar mediante Dice y V-measure.
+* Seleccionar la configuración final.
+
+Las cinco imágenes de prueba se utilizan ÚNICAMENTE después de haber seleccionado y fijado la configuración final.
+
+**PROHIBIDO utilizar las imágenes o máscaras de prueba para escoger parámetros, modificar criterios, seleccionar configuraciones o mejorar resultados.**
+
+No cargues ni inspecciones sus máscaras durante el ajuste.
+
+Puedes verificar previamente que sus archivos existen, sin leer sus contenidos.
+
+El algoritmo K-Means debe funcionar de manera no supervisada. Las máscaras de referencia no deben utilizarse para crear los clústeres ni para determinar directamente cuáles representan la lesión.
+
+Las máscaras de ajuste sí pueden utilizarse para evaluar las configuraciones y seleccionar el método global, como establece el enunciado.
+
+---
+
+# 3. DESARROLLAR TODAS LAS ACTIVIDADES OBLIGATORIAS
+
+## ACTIVIDAD 1. PIPELINE DE PREPARACIÓN Y REPRESENTACIÓN
+
+Implementa correctamente un Pipeline de Scikit-learn que transforme una imagen RGB en una matriz numérica donde cada fila represente un píxel.
+
+Cada píxel debe tener las características:
+
+[β·R, β·G, β·B, λ·x, λ·y]
+
+Requisitos:
+
+* R, G y B normalizados entre 0 y 1.
+* Coordenadas x e y normalizadas entre 0 y 1.
+* β controla la importancia del color.
+* λ controla la importancia de la posición.
+* Los parámetros deben poder modificarse sin cambiar la implementación del pipeline.
+* β = 0 permite trabajar solamente con posición.
+* λ = 0 permite trabajar solamente con color.
+* β = λ = 0 no debe aceptarse.
+* Debe comprobarse la forma y consistencia de la matriz resultante.
+
+Prioriza la forma de implementar pipelines y transformaciones utilizada en las prácticas del curso.
+
+Documenta las decisiones de normalización y representación.
+
+Incluye una demostración visual y una verificación del funcionamiento.
+
+## ACTIVIDAD 2. K-MEANS Y SELECCIÓN DE K MEDIANTE SILUETA
+
+Para cada una de las 15 imágenes de ajuste:
+
+1. Explora exactamente diez combinaciones de β y λ.
+2. Las diez combinaciones deben tener diferentes razones λ/β.
+3. Incluye obligatoriamente una combinación de solo color.
+4. Incluye obligatoriamente una combinación de solo posición.
+5. Para cada combinación, evalúa K desde 2 hasta 8.
+6. Selecciona K utilizando el coeficiente de silueta.
+
+El coeficiente de silueta debe calcularse sobre una muestra reproducible de píxeles.
+
+Debes documentar:
+
+* Tamaño de la muestra.
+* Semilla aleatoria.
+* Rango de K explorado.
+* Forma de seleccionar K.
+* Justificación de las diez combinaciones.
+
+La selección de K debe hacerse SIN consultar las máscaras de referencia.
+
+Implementa tablas y visualizaciones que permitan comprobar la exploración realizada.
+
+Puedes reutilizar los procedimientos de evaluación de K-Means enseñados en las prácticas.
+
+### Requisito de eficiencia
+
+Este laboratorio requiere múltiples ejecuciones de K-Means.
+
+Debes optimizar razonablemente el tiempo de ejecución sin incumplir el protocolo.
+
+Puedes:
+
+* Trabajar con imágenes redimensionadas.
+* Utilizar muestras reproducibles para silueta.
+* Evitar ejecutar varias veces configuraciones idénticas.
+* Reutilizar resultados calculados.
+* Almacenar temporalmente resultados cuando sea conveniente.
+* Reducir el consumo innecesario de memoria.
+
+Si decides utilizar una muestra para ajustar K-Means y después asignar todos los píxeles, documenta explícitamente esa decisión y sus implicaciones, diferenciándola del ajuste sobre todos los píxeles.
+
+No elimines combinaciones, valores de K o imágenes exigidas para acelerar el laboratorio.
+
+Evita que el notebook requiera recursos excesivos para volver a ejecutarse en un computador personal con Windows.
+
+## ACTIVIDAD 3. CONSTRUCCIÓN AUTOMÁTICA DE LA MÁSCARA
+
+K-Means produce grupos, pero estos no necesariamente corresponden a las categorías lesión y piel.
+
+Debes diseñar e implementar un criterio automático para identificar el grupo o los grupos correspondientes a la lesión.
+
+Puedes considerar:
+
+* Color promedio.
+* Oscuridad o luminancia.
+* Tamaño de los grupos.
+* Ubicación espacial.
+* Centralidad.
+* Relación con los bordes.
+* Otras características justificables.
+
+El criterio debe:
+
+* Ser automático.
+* Ser reproducible.
+* No requerir intervención manual por imagen.
+* No utilizar la máscara de referencia para identificar los grupos.
+* Producir una máscara binaria.
+* Funcionar con los diferentes valores de K.
+
+Puedes comparar dos criterios diferentes, como sugiere el enunciado.
+
+El notebook actual propone dos criterios. Revísalos críticamente y determina si son adecuados.
+
+No los conserves automáticamente.
+
+Si es necesario reemplazarlos o simplificarlos, hazlo siguiendo las prácticas del curso y justificando las decisiones.
+
+Los umbrales y pesos del criterio deben ser explícitos y consistentes. Cualquier ajuste de estas reglas debe realizarse exclusivamente con las imágenes de ajuste.
+
+Incluye una explicación comprensible de cómo pasamos de los grupos de K-Means a la máscara binaria.
+
+## ACTIVIDAD DE VERIFICACIÓN OBLIGATORIA CON IA
+
+El enunciado exige una consulta independiente a una herramienta de IA generativa ANTES de seleccionar la configuración final.
+
+En el proyecto debe existir un archivo:
+
+`consulta_IAG.md`
+
+Este archivo contendrá la conversación real con la IA, realizada sin mencionar ISIC ni adjuntar imágenes.
+
+Debes:
+
+1. Leer la recomendación real de la IA.
+2. Identificar los valores recomendados de β, λ y K.
+3. Identificar el criterio de selección de clústeres propuesto.
+4. Implementar esa recomendación de manera fiel.
+5. Evaluarla utilizando las 15 imágenes de ajuste.
+6. Comparar sus resultados con las configuraciones exploradas.
+7. Identificar en qué acertó y en qué falló.
+8. Explicar por qué la IA no podía anticipar los resultados sin conocer las imágenes.
+
+IMPORTANTE:
+
+No inventes conversaciones, prompts, respuestas ni resultados.
+
+El notebook actual contiene una recomendación hipotética de β = 1, λ = 0,5 y K = 3. NO debes presentarla como una recomendación real, salvo que coincida con el contenido de `consulta_IAG.md`.
+
+Si el archivo no existe o no contiene la consulta real, deja esta sección claramente identificada como pendiente de evidencia humana.
+
+La actividad debe aparecer antes de la selección de la configuración final.
+
+## ACTIVIDAD 4. AJUSTE Y SELECCIÓN DE LA CONFIGURACIÓN FINAL
+
+Usando exclusivamente las 15 imágenes de ajuste:
+
+Evalúa las diez combinaciones de β y λ junto con los criterios de construcción de la máscara.
+
+Para cada configuración calcula:
+
+* Coeficiente de Dice.
+* V-measure.
+* Coeficiente de silueta.
+* K seleccionado.
+
+El coeficiente de Dice debe calcularse entre la máscara estimada y la máscara real.
+
+El V-measure debe calcularse entre las etiquetas de referencia y las etiquetas de los clústeres.
+
+**La métrica principal para seleccionar la configuración definitiva es el DICE PROMEDIO de las 15 imágenes de ajuste.**
+
+V-measure es una métrica complementaria.
+
+Debes generar una tabla comparativa que incluya todas las configuraciones evaluadas.
+
+La comparación debe incluir:
+
+* β.
+* λ.
+* Criterio de construcción de máscara.
+* Dice promedio.
+* V-measure promedio.
+* Silueta promedio.
+* K seleccionado por imagen o un resumen de sus valores.
+* Medidas de variabilidad cuando sean útiles.
+
+También debes identificar los mejores y peores resultados de ajuste.
+
+### Visualizaciones obligatorias
+
+El enunciado exige visualizar:
+
+1. Las dos configuraciones con mayor Dice promedio.
+2. La configuración que utiliza solo color.
+3. La configuración que utiliza solo posición.
+
+Incluye las imágenes originales y los grupos obtenidos.
+
+Agrega las máscaras estimadas y las de referencia cuando sirvan para interpretar los resultados.
+
+Explica por qué algunas configuraciones funcionaron mejor que otras.
+
+No basta con mostrar las tablas: debes interpretar los resultados.
+
+Finalmente, fija una configuración definitiva que incluya:
+
+* β final.
+* λ final.
+* Criterio final de construcción de máscara.
+* Procedimiento fijo de selección de K mediante silueta.
+* Cualquier otro parámetro necesario.
+
+La selección debe hacerse antes de consultar las máscaras de prueba.
+
+## ACTIVIDAD 5. EVALUACIÓN FINAL
+
+Una vez seleccionada y documentada la configuración final:
+
+Aplica exactamente el mismo método a las cinco imágenes de prueba.
+
+No modifiques β, λ, el criterio de selección de la máscara, el rango de K ni las demás reglas del método.
+
+El procedimiento de selección de K mediante silueta puede ejecutarse sobre cada nueva imagen, como establece el protocolo, pero no puede alterarse utilizando sus máscaras.
+
+Para cada imagen de prueba debes mostrar:
+
+* Identificador de imagen.
+* K seleccionado.
+* Coeficiente de silueta.
+* Coeficiente de Dice.
+* V-measure.
+* Precisión.
+* Recall.
+
+Considera la lesión como clase positiva (1).
+
+Incluye visualizaciones de las cinco imágenes:
+
+* Imagen original.
+* Grupos producidos por K-Means.
+* Máscara estimada.
+* Máscara de referencia.
+
+Si resulta útil, también puedes incluir mapas de falsos positivos y falsos negativos.
+
+Calcula y compara los promedios de Dice en los conjuntos de ajuste y prueba.
+
+Identifica las principales diferencias y los casos donde el método falla.
+
+No intentes mejorar los resultados de prueba modificando el método.
+
+El enunciado establece explícitamente que no se espera obtener un Dice alto en todas las imágenes.
+
+---
+
+# 4. ANÁLISIS DE RESULTADOS: UNA DE LAS PARTES MÁS IMPORTANTES
+
+La rúbrica asigna una proporción considerable de la nota al análisis crítico.
+
+El notebook debe responder completamente las CINCO preguntas del enunciado.
+
+No quiero respuestas genéricas ni explicaciones teóricas desconectadas de los experimentos.
+
+**CADA RESPUESTA DEBE ESTAR RESPALDADA POR RESULTADOS REALES OBTENIDOS EN EL NOTEBOOK.**
+
+## Pregunta 1. Efecto de incluir la posición
+
+Explica qué efecto tuvo incluir las coordenadas x e y.
+
+Identifica imágenes concretas donde:
+
+* Mejoró la segmentación.
+* Perjudicó la segmentación.
+
+Compara los coeficientes de Dice y explica los cambios observados.
+
+Incluye ejemplos y visualizaciones que respalden las conclusiones.
+
+## Pregunta 2. Relación entre K, silueta y Dice
+
+Analiza cómo se relacionaron:
+
+* K seleccionado.
+* Coeficiente de silueta.
+* Coeficiente de Dice.
+
+Explica por qué una agrupación con buena silueta no necesariamente produce una buena máscara de lesión.
+
+Utiliza valores experimentales concretos.
+
+Cuando corresponda, compara también el comportamiento del V-measure.
+
+## Pregunta 3. Comparación entre ajuste y prueba
+
+Compara cuantitativamente los resultados de las 15 imágenes de ajuste y las cinco imágenes de prueba.
+
+Incluye:
+
+* Dice promedio.
+* Diferencias observadas.
+* Comportamiento de precisión y recall cuando sea relevante.
+* Casos concretos de acierto y fallo.
+
+Explica la importancia del protocolo experimental y por qué modificar el método después de consultar las máscaras de prueba produciría una evaluación sesgada.
+
+## Pregunta 4. Limitaciones del método
+
+Identifica al menos dos limitaciones relevantes.
+
+Deben basarse en evidencias observadas en las imágenes.
+
+Relaciona las limitaciones con:
+
+* Representación RGB.
+* Coordenadas espaciales.
+* Características de K-Means.
+* Comportamiento del criterio de construcción de máscaras.
+
+No afirmes que una imagen presenta un artefacto específico si no lo has comprobado visualmente.
+
+## Pregunta 5. Riesgos, sesgos y generalización
+
+Analiza las consecuencias de los falsos positivos y falsos negativos para DermAlpes.
+
+Explica:
+
+* Qué ocurre cuando se marcan píxeles sanos como lesión.
+* Qué ocurre cuando parte de la lesión no se identifica.
+* Cómo pueden afectar los errores a la delimitación de la lesión.
+* Sesgos potenciales del conjunto de imágenes.
+* Riesgos de generalización hacia otras poblaciones.
+* Diferencias en tonos de piel.
+* Variaciones en equipos de captura e iluminación.
+* Riesgos de aplicar el método en contextos distintos.
+
+Relaciona estos riesgos con los resultados experimentales cuando sea posible.
+
+Aclara que el sistema no realiza diagnósticos médicos.
+
+### Reglas para redactar el análisis
+
+* Utiliza lenguaje académico claro y natural.
+* Mantén un nivel apropiado para un estudiante de Ingeniería de Sistemas.
+* Incluye cifras concretas y nombres de imágenes.
+* Evita párrafos innecesariamente extensos.
+* Explica los resultados, no te limites a repetir las métricas.
+* No inventes observaciones.
+* No presentes hipótesis como hechos comprobados.
+* No dejes textos como "completar después" cuando los resultados ya estén disponibles.
+* Si alguna observación requiere interpretación humana, identifica el resultado que debe revisarse.
+
+---
+
+# 5. BONOS OPCIONALES
+
+El laboratorio incluye dos bonos de hasta 0,25 puntos adicionales cada uno.
+
+La plantilla existente contiene implementaciones preliminares de ambos.
+
+Primero completa y verifica todas las actividades obligatorias.
+
+Después, si los recursos computacionales lo permiten, desarrolla y ejecuta ambos bonos.
+
+## Bono A. PCA o t-SNE
+
+Selecciona una imagen del conjunto de ajuste.
+
+Aplica PCA o t-SNE a una muestra reproducible de los píxeles representados.
+
+Genera al menos las dos visualizaciones exigidas:
+
+* Proyección coloreada por clúster.
+* Proyección coloreada por máscara de referencia.
+
+Interpreta coincidencias, diferencias y limitaciones de la proyección.
+
+No necesitas utilizar ambos algoritmos si uno permite cumplir completamente el enunciado.
+
+Prioriza una implementación clara y consistente con las prácticas.
+
+## Bono B. Mean Shift
+
+Investiga y explica brevemente Mean Shift.
+
+Aplícalo a una imagen de ajuste utilizando una resolución y muestra computacionalmente razonables.
+
+Compara con K-Means:
+
+* Número de clústeres.
+* Máscara binaria estimada.
+* Coeficiente de Dice.
+* Tiempo de ejecución.
+* Resultados visuales.
+
+Explica el papel de `bandwidth` y por qué Mean Shift no requiere fijar K.
+
+No repitas innecesariamente el experimento para las 20 imágenes.
+
+Ambos bonos deben quedar en una sección independiente al final del notebook, titulada:
+
+`Bonos`
+
+Si un bono no puede ejecutarse correctamente, no inventes resultados.
+
+---
+
+# 6. USO DE HERRAMIENTAS DE IA GENERATIVA
+
+La rúbrica también evalúa el uso responsable de IA.
+
+Incluye una sección titulada exactamente:
+
+`Uso de herramientas de IA generativa`
+
+Debe contener:
+
+### Declaración de herramientas utilizadas
+
+Documenta de forma transparente:
+
+* Gemini: generación de la estructura inicial del notebook.
+* Codex / GPT-6 Astra: revisión, implementación, corrección de código, depuración y apoyo en la documentación.
+* Herramienta utilizada para la consulta obligatoria de verificación, según el historial real.
+
+### Prompts principales
+
+Incluye los prompts o resúmenes fieles de las interacciones principales.
+
+No inventes conversaciones.
+
+### Evaluación crítica
+
+Explica, basándote en lo sucedido:
+
+* Qué propuestas de IA fueron útiles.
+* Qué errores o limitaciones aparecieron.
+* Qué partes del notebook inicial requirieron correcciones.
+* Qué conceptos aprendidos en clase permitieron comprobar las soluciones.
+
+### Aportes propios
+
+Deja identificadas las decisiones que requieren revisión y validación de los integrantes.
+
+No atribuyas falsamente decisiones a los estudiantes.
+
+Puedes preparar una estructura para documentar los aportes humanos, pero no debes inventarlos.
+
+Es especialmente importante analizar la recomendación inicial de IA comparándola con sus resultados reales en las 15 imágenes de ajuste.
+
+---
+
+# 7. PRESENTACIÓN Y CALIDAD DEL NOTEBOOK
+
+Quiero un notebook bien organizado, pero sin complejidad innecesaria.
+
+Mantén una estructura similar a la siguiente, adaptándola si encuentras una organización mejor:
+
+1. Introducción y contexto de DermAlpes.
+2. Objetivos del laboratorio.
+3. Fuente y descripción de los datos.
+4. Importación de librerías y configuración.
+5. Carga y exploración de las imágenes de ajuste.
+6. Actividad 1: Pipeline y representación.
+7. Actividad 2: K-Means y selección de K.
+8. Actividad 3: Construcción de máscaras.
+9. Actividad de verificación con IA.
+10. Actividad 4: Ajuste y selección del método.
+11. Actividad 5: Evaluación final en prueba.
+12. Análisis de las cinco preguntas.
+13. Uso de herramientas de IA generativa.
+14. Bonos opcionales.
+
+No es obligatorio conservar esta estructura exacta.
+
+Cada sección debe contener:
+
+* Una explicación breve del objetivo.
+* Código legible y organizado.
+* Resultados y visualizaciones cuando correspondan.
+* Interpretación de las decisiones y resultados.
+
+### Estilo de programación
+
+* Utiliza principalmente NumPy, Pandas, Scikit-learn, Pillow y Matplotlib.
+* Prioriza las librerías enseñadas en las prácticas.
+* Evita dependencias adicionales injustificadas.
+* Utiliza nombres de variables y funciones descriptivos.
+* Incluye comentarios útiles, pero no comentes cada línea.
+* Evita duplicación excesiva de código.
+* Emplea semillas para garantizar reproducibilidad.
+* Usa rutas relativas.
+* Conserva los nombres de los integrantes existentes en el notebook, para su revisión.
+* Mantén las tablas y gráficas legibles.
+* No generes resultados de ejemplo que puedan confundirse con los reales.
+
+Debes revisar todas las celdas Markdown del notebook inicial.
+
+Algunas contienen afirmaciones sobre resultados experimentales que todavía no han sido comprobados.
+
+Corrige, elimina o reemplaza esas afirmaciones según corresponda.
+
+---
+
+# 8. EJECUCIÓN Y VALIDACIÓN
+
+**NO CONSIDERES EL LABORATORIO TERMINADO HASTA HABER INTENTADO EJECUTAR Y VALIDAR EL NOTEBOOK COMPLETO.**
+
+Debes:
+
+1. Identificar el entorno de Python disponible.
+2. Verificar e instalar las dependencias necesarias, si tienes permisos.
+3. Comprobar que se cargan correctamente los datos.
+4. Ejecutar los experimentos de ajuste.
+5. Verificar las métricas.
+6. Seleccionar la configuración final.
+7. Ejecutar la evaluación de prueba una sola vez después de fijar la configuración.
+8. Generar las visualizaciones requeridas.
+9. Completar los análisis que puedan fundamentarse en los resultados.
+10. Ejecutar los bonos, si es viable.
+11. Revisar errores, advertencias y resultados inconsistentes.
+
+### Verificaciones técnicas obligatorias
+
+Comprueba que:
+
+* Hay 15 imágenes de ajuste y 5 de prueba.
+* No existe solapamiento entre conjuntos.
+* Las máscaras solo contienen 0 y 1.
+* Las máscaras y las imágenes tienen dimensiones compatibles.
+* El pipeline genera cinco características por píxel.
+* β y λ modifican correctamente la representación.
+* Se prueban diez combinaciones distintas.
+* Se evalúan los siete valores de K entre 2 y 8.
+* K se selecciona mediante silueta.
+* La semilla y el tamaño de muestra son reproducibles.
+* El criterio de máscara no utiliza las etiquetas reales.
+* Dice y V-measure están calculados correctamente.
+* La selección final se basa principalmente en el Dice promedio de ajuste.
+* Las imágenes de prueba no intervienen en ninguna decisión.
+* La evaluación final contiene las seis métricas exigidas.
+* Las cinco preguntas del análisis tienen evidencia.
+* Los gráficos corresponden realmente a las configuraciones descritas.
+
+Si encuentras un error en el notebook inicial, corrígelo e indica brevemente qué estaba mal.
+
+No ocultes errores mediante excepciones generales o valores inventados.
+
+### Rendimiento
+
+Procura que el laboratorio se pueda ejecutar localmente sin GPU.
+
+Utiliza configuraciones computacionalmente razonables y justifica los compromisos realizados.
+
+Si una operación resulta demasiado costosa, optimízala sin incumplir las exigencias de la rúbrica.
+
+---
+
+# 9. ENTREGABLES FINALES
+
+Necesito que dejes preparados los siguientes archivos:
+
+### 9.1. Notebook final
+
+`Lab4_Segmentacion_Imagenes.ipynb`
+
+Debe contener:
+
+* Todas las actividades obligatorias.
+* Código final corregido.
+* Ejecuciones visibles.
+* Tablas.
+* Gráficas.
+* Análisis de resultados.
+* Declaración de IA.
+* Bonos, si fueron completados.
+
+### 9.2. Exportación HTML
+
+`Lab4_Segmentacion_Imagenes.html`
+
+Debe mostrar los resultados y visualizaciones del notebook ejecutado.
+
+Utiliza Jupyter nbconvert u otra herramienta adecuada para exportarlo correctamente.
+
+Comprueba que las gráficas se visualizan.
+
+### 9.3. Dependencias
+
+Crea o actualiza un `requirements.txt` que permita reproducir el notebook.
+
+No incluyas librerías que no se utilicen.
+
+### 9.4. README
+
+Prepara un `README.md` breve que explique:
+
+* Propósito del laboratorio.
+* Estructura del proyecto.
+* Dependencias.
+* Organización de `data/images` y `data/masks`.
+* Cómo ejecutar el notebook.
+* Fuente de los datos.
+
+### 9.5. Gitignore
+
+Asegúrate de que el `.gitignore` excluya:
+
+* `.venv/`
+* Archivos temporales de Python.
+* Checkpoints de Jupyter.
+* Datos originales que no deban subirse al repositorio.
+
+### 9.6. Material para el video
+
+El enunciado exige un video explicativo de máximo tres minutos dirigido a DermAlpes.
+
+No puedes considerar el video entregado solamente por preparar su contenido.
+
+Sin embargo, después de obtener los resultados reales, crea un archivo:
+
+`Guion_Video.md`
+
+Con un guion de máximo tres minutos que explique:
+
+* Problema de DermAlpes.
+* Cómo funciona el método de segmentación.
+* Cómo se obtiene la máscara.
+* Principales resultados de prueba.
+* Ejemplos de aciertos y errores.
+* Limitaciones y precauciones.
+
+Utiliza un lenguaje comprensible para un público no especializado.
+
+El guion debe utilizar únicamente resultados comprobados.
+
+---
+
+# 10. CONTROL DE CALIDAD FINAL CONTRA LA RÚBRICA
+
+Antes de terminar, revisa nuevamente el enunciado y la rúbrica.
+
+Construye una lista de verificación que cubra todos los criterios obligatorios:
+
+* Pipeline de preparación y representación.
+* Exploración y selección de K mediante silueta.
+* Criterio automático de construcción de la máscara.
+* Ajuste y selección de la configuración final.
+* Evaluación final en cinco imágenes de prueba.
+* Análisis de resultados: preguntas 1 y 2.
+* Comparación entre ajuste y prueba.
+* Limitaciones del método.
+* Riesgos, sesgos y generalización.
+* Actividad obligatoria de verificación con IA.
+* Documentación del uso de IA generativa.
+* Video explicativo (guion preparado y grabación pendiente).
+* Bonos opcionales, si se desarrollaron.
+
+Para cada criterio, indica:
+
+1. Si está completo.
+2. En qué sección del notebook se encuentra.
+3. Qué evidencia permite comprobar su cumplimiento.
+4. Si existe alguna limitación o tarea pendiente.
+
+Tu objetivo es cumplir las condiciones del **Nivel 4** de la rúbrica.
+
+No marques como completo un requisito que todavía necesite una acción humana.
+
+---
+
+# 11. INSTRUCCIONES IMPORTANTES SOBRE TU FORMA DE TRABAJAR
+
+Quiero que trabajes directamente sobre los archivos, no que simplemente me expliques cómo resolver el laboratorio.
+
+Tienes autorización para:
+
+* Leer las prácticas de clase.
+* Leer y modificar el notebook.
+* Crear funciones auxiliares.
+* Reorganizar las secciones.
+* Corregir errores.
+* Ejecutar el código.
+* Generar archivos complementarios.
+* Optimizar operaciones.
+* Exportar el notebook.
+
+Debes preservar los datos originales y las prácticas oficiales.
+
+### PRIORIDADES EN CASO DE CONFLICTO
+
+1. Enunciado oficial del laboratorio.
+2. Rúbrica oficial, especialmente Nivel 4.
+3. Prácticas oficiales del curso.
+4. Requisitos de reproducibilidad y validez del protocolo.
+5. Notebook inicial generado por Gemini.
+
+Si el notebook inicial contradice una fuente de mayor prioridad, corrígelo.
+
+### SOBRE EL ANÁLISIS
+
+No quiero respuestas inventadas para que el documento parezca terminado.
+
+Realiza los experimentos, observa los resultados y utiliza esa evidencia para construir las conclusiones.
+
+Distingue claramente resultados observados, hipótesis y limitaciones.
+
+### SOBRE LA AUTORÍA
+
+La IA debe apoyar técnicamente el desarrollo, pero no debes simular decisiones humanas, verificaciones, conversaciones ni observaciones que no ocurrieron.
+
+Deja claramente identificadas las partes que los integrantes deben revisar y validar.
+
+### SOBRE LA COMUNICACIÓN
+
+Evita interrumpir el desarrollo con preguntas si puedes resolver la situación consultando los archivos, las prácticas o el enunciado.
+
+Si existe una limitación que realmente impide completar una parte, documenta qué falta y continúa con las demás actividades.
+
+No afirmes que un archivo fue generado, una celda fue ejecutada o un resultado fue comprobado si no ocurrió.
+
+---
+
+# 12. CÓMO DEBES COMENZAR
+
+Empieza por:
+
+1. Inspeccionar el proyecto y sus archivos.
+2. Leer el enunciado completo.
+3. Analizar las 14 páginas de la rúbrica.
+4. Inspeccionar las prácticas oficiales del directorio indicado.
+5. Analizar detalladamente el notebook existente.
+6. Identificar los errores y modificaciones necesarias.
+7. Implementar y ejecutar la solución utilizando las prácticas como referencia principal.
+
+Después continúa hasta completar todas las actividades posibles.
+
+**RECUERDA: LA PRIORIDAD NO ES PRODUCIR EL CÓDIGO MÁS SOFISTICADO, SINO UNA SOLUCIÓN CORRECTA, REPRODUCIBLE, EXPLICABLE Y ESTRECHAMENTE BASADA EN LO ENSEÑADO EN CLASE.**
+
+Al terminar, entrégame un resumen que indique:
+
+* Archivos creados o modificados.
+* Prácticas concretas utilizadas como referencia.
+* Errores corregidos del notebook inicial.
+* Configuración final seleccionada, si pudo ejecutarse.
+* Resultados promedio de Dice en ajuste y prueba, si fueron calculados.
+* Estado de cada requisito de la rúbrica.
+* Requisitos que todavía necesiten intervención humana.
+* Instrucciones exactas para ejecutar o entregar los archivos restantes.
+
+Trabaja con el objetivo de obtener el máximo cumplimiento posible del enunciado y de la rúbrica, sin inventar resultados y sin violar el protocolo experimental.

@@ -1,0 +1,38 @@
+{
+  "config": "C05",
+  "beta": 1.0,
+  "lam": 0.75,
+  "criterio": "central",
+  "K_rango": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "seleccion_K": "max_silueta; empate menor K",
+  "semilla": 42,
+  "muestra_silueta": 1000,
+  "lado_max": 160,
+  "n_init": 10,
+  "max_iter": 300,
+  "tol": 0.0001,
+  "algorithm": "lloyd",
+  "regla_central": {
+    "oscuridad": 0.65,
+    "centralidad": 0.35,
+    "penalizacion_borde": 0.5,
+    "marco": 0.05
+  },
+  "consulta_IAG": "respuesta real evaluada en 15 imágenes de ajuste; falta historial del prompt",
+  "versiones": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "Pillow": "12.3.0",
+    "matplotlib": "3.11.2",
+    "threadpoolctl": "3.7.0"
+  }
+}
