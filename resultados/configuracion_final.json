@@ -26,7 +26,6 @@
     "penalizacion_borde": 0.5,
     "marco": 0.05
   },
-  "consulta_IAG": "respuesta real evaluada en 15 imágenes de ajuste; falta historial del prompt",
   "versiones": {
     "numpy": "2.5.3",
     "pandas": "3.0.6",
