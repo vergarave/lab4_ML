@@ -1,43 +1,99 @@
 # Guion para DermAlpes — máximo 3 minutos
 
-**Uso:** guion de apoyo basado en resultados ejecutados. El entregable audiovisual es la grabación de máximo tres minutos. Aproximadamente 320 palabras; ensayar a ritmo natural y mantener el video bajo tres minutos. No leer títulos ni nombres de archivos.
+**Cómo usarlo:** lee únicamente los bloques entre comillas. Las instrucciones de pantalla y puntero no se leen. La secuencia está pensada para unos 2:50, con diez segundos de margen; comprueba la duración al ensayar.
 
-## 0:00–0:25 · El problema
+## Antes de grabar
 
-“DermAlpes necesita ayudar a sus especialistas a delimitar lesiones en fotografías de piel. Nuestra herramienta propone una región para revisar y medir; no determina si una lesión es benigna o maligna y no reemplaza al dermatólogo.
+Ten abiertas, en este orden, estas cuatro imágenes:
 
-Trabajamos con veinte imágenes y sus delimitaciones de referencia: quince para elegir el método y cinco reservadas para evaluarlo.”
+1. `resultados/ajuste_ISIC_0000133.png`: amplía **solo la primera fila**, identificada como «Top 1: β=1, λ=0.75 / central». No señales las filas Top 2, solo color o solo posición.
+2. `resultados/prueba_ISIC_0000128.png`: ejemplo con mejor Dice de prueba.
+3. `resultados/prueba_ISIC_0000087.png`: ejemplo con menor Dice de prueba.
+4. `resultados/prueba_ISIC_0000123.png`: ejemplo de piel incluida por error.
 
-**Mostrar:** una imagen y su máscara de referencia.
+En todas, las cinco columnas se leen de izquierda a derecha: **1. Original · 2. Grupos · 3. Máscara estimada · 4. Referencia · 5. Errores**. Si ya preparaste recortes, identifica los paneles por esos títulos.
 
-## 0:25–1:05 · Cómo funciona
+**Atención a los colores:** en la columna 2 solo distinguen grupos; no significan acierto o error. Únicamente en la columna 5, verde = lesión identificada correctamente, azul = lesión omitida y rojo = píxeles incluidos por error.
 
-“Representamos cada píxel por su color y su posición. K-Means reúne píxeles parecidos en grupos. Probamos entre dos y ocho grupos y elegimos la separación más clara mediante una medida llamada silueta.
+## 0:00–0:25 · Problema y objetivo
 
-Después debemos decidir qué grupo representa la lesión. La regla seleccionada favorece grupos oscuros y centrales, y penaliza los que ocupan el borde de la fotografía. Ese grupo se convierte en la región blanca de la máscara.
+**Pantalla:** primera fila de `ajuste_ISIC_0000133.png`.
 
-Comparamos diez combinaciones de color y posición, y dos reglas, usando solamente las quince imágenes de ajuste.”
+**Señala la lesión marrón de la original, columna 1. Di:**
 
-**Mostrar:** `resultados/ajuste_ISIC_0000133.png`, primera fila. Señalar original, grupos y máscara.
+> “DermAlpes necesita delimitar lesiones como esta para apoyar la revisión del especialista. Nuestra herramienta propone una región para medir; no realiza diagnósticos ni reemplaza al dermatólogo.”
 
-## 1:05–1:50 · Resultados reales
+**Pasa a la región blanca de referencia, columna 4. Di:**
 
-“Elegimos el método con mayor coincidencia promedio con las referencias. La medida Dice va de cero a uno: uno significa coincidencia perfecta. Obtuvimos 0,862 en ajuste y 0,894 en las cinco imágenes nuevas, sin cambiar el método después de evaluarlas.
+> “Esta máscara de referencia indica la zona que buscamos recuperar. Trabajamos con veinte imágenes: quince para elegir el método y cinco para evaluarlo.”
 
-El mejor caso de prueba alcanzó 0,937: la región central se recupera bien, aunque faltan algunos píxeles del borde. El peor alcanzó 0,837: la máscara omite una parte visible de la lesión. Estos promedios no garantizan el mismo resultado para cada paciente.”
+## 0:25–1:00 · De los grupos a la máscara
 
-**Mostrar:** `resultados/prueba_ISIC_0000128.png` y `resultados/prueba_ISIC_0000087.png`. Verde=aciertos; azul=lesión omitida.
+**Mantén la misma imagen. Señala primero la original y después el mapa de colores de la columna 2. Di:**
 
-## 1:50–2:40 · Errores y precauciones
+> “Representamos cada píxel por su color y posición. K-Means reúne píxeles parecidos en grupos. Probamos entre dos y ocho grupos y elegimos K mediante una medida de separación llamada silueta.”
 
-“Si incluimos piel como lesión, podemos sobreestimar el área. Si dejamos lesión fuera, podemos subestimarla. También vimos regiones oscuras del fondo confundidas con lesión y cambios de resultado al dar más peso a la posición.
+**En la columna 2, señala el grupo azul del centro y luego las regiones de las esquinas. Di:**
 
-Las imágenes se redujeron para hacer viable el cálculo, por lo que no evaluamos el detalle de los bordes originales. Solo cinco imágenes de prueba son insuficientes para asegurar funcionamiento en otras poblaciones, tonos de piel, equipos o iluminación.
+> “Después elegimos un grupo oscuro y central, penalizando su presencia en el borde.”
 
-La propuesta es una ayuda visual que requiere revisión de cada contorno y validación independiente antes de otro uso.”
+**Muévete a la zona blanca central de la máscara estimada, columna 3, y compárala con la columna 4. Di:**
 
-**Mostrar:** mapa de errores de `ISIC_0000123` y cerrar con “Delimitación de apoyo · No diagnóstico”.
+> “Ese grupo se convierte en la región blanca de nuestra máscara. Aquí se aproxima a la referencia, aunque todavía presenta errores.”
 
-## Fuera del guion: control de entrega
+No digas que el azul del mapa de grupos representa lesión omitida: esa leyenda solo corresponde al último panel.
 
-Revisar las cifras en `resultados/prueba_metricas.csv`. Los integrantes deben entender y validar personalmente el contenido. La respuesta real de `consulta_IAG.md` ya se implementó y evaluó en ajuste; su Dice medio fue 0.8061 y no desplazó al método final. Falta adjuntar el prompt y el historial originales para completar la evidencia de consulta. El video grabado debe ajustarse a la duración real, no solo a estos tiempos orientativos.
+## 1:00–1:20 · Resultado global
+
+**Pantalla:** mantén la imagen anterior. Puedes colocar como texto sobre la pantalla: «Dice medio: ajuste 0,862 · prueba 0,894». Estas son cifras globales; no señales el Dice 0,878 de este caso como si fuera el promedio.
+
+**Di:**
+
+> “Comparamos diez combinaciones de color y posición y dos reglas. Elegimos por Dice promedio, que vale uno cuando la coincidencia es perfecta. Obtuvimos 0,862 en ajuste y 0,894 en prueba, sin cambiar el método tras evaluarlo.”
+
+## 1:20–1:40 · Ejemplo de mejor resultado
+
+**Pantalla:** `prueba_ISIC_0000128.png`.
+
+**Señala la máscara estimada, columna 3, y después la referencia, columna 4. Di:**
+
+> “Este fue el mejor caso de prueba, con Dice 0,937. La región estimada y la referencia son parecidas.”
+
+**Pasa al mapa de errores, columna 5. Recorre el centro verde y la franja azul fina del borde. Di:**
+
+> “El verde muestra la lesión identificada correctamente; la franja azul señala lo que quedó fuera.”
+
+## 1:40–2:05 · Ejemplo de lesión omitida
+
+**Pantalla:** `prueba_ISIC_0000087.png`.
+
+**Alterna el puntero entre la máscara estimada, columna 3, y la referencia, columna 4. Di:**
+
+> “Este fue el caso de menor coincidencia en prueba: Dice 0,837. La máscara estimada es más pequeña que la referencia.”
+
+**En el último panel, señala la zona azul amplia del borde derecho e inferior. Di:**
+
+> “Aquí el azul es más extenso: estamos omitiendo parte de la lesión. Si midiéramos con esta máscara, subestimaríamos su área.”
+
+## 2:05–2:25 · Ejemplo de piel incluida
+
+**Pantalla:** `prueba_ISIC_0000123.png`.
+
+**Señala directamente la franja roja inferior del mapa de errores, columna 5; luego compara el borde inferior de las columnas 3 y 4. Di:**
+
+> “También puede ocurrir lo contrario. Esta franja roja corresponde a píxeles que incluimos como lesión y que la referencia considera fondo. El contorno se extiende demasiado y puede sobreestimar el área. Por eso hay que revisar cada delimitación, incluso cuando el Dice es alto.”
+
+## 2:25–2:50 · Limitaciones y cierre
+
+**Pantalla:** mantén el último mapa de errores durante la primera frase. Después muestra el texto «Delimitación de apoyo · No diagnóstico».
+
+**Di:**
+
+> “Reducimos las imágenes para hacer viable el cálculo, perdiendo detalle en los bordes. Cinco imágenes de prueba no garantizan el mismo desempeño con otros tonos de piel, equipos o iluminación. La herramienta necesita validación con datos de DermAlpes y revisión del especialista. Su función es apoyar la delimitación, no diagnosticar.”
+
+## Indicaciones de grabación — no se leen
+
+- Mueve el puntero cuando digas «esta», «aquí» o «esa franja» y déjalo quieto uno o dos segundos sobre la región correspondiente.
+- En los ejemplos de prueba, amplía las columnas 3, 4 y 5 si no se distinguen los bordes. No tapes el mapa con la cámara del presentador.
+- No leas identificadores, nombres de archivos, títulos ni todos los números de cada panel. Usa las cifras del texto hablado.
+- Ensaya con cronómetro. Si hay que recortar, acorta las transiciones entre imágenes y conserva la explicación de verde, azul y rojo, los resultados y el cierre.
